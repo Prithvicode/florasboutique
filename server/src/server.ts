@@ -1,7 +1,11 @@
 import express from "express";
 import DbConfig from "./config/dbconfig";
-import userRoutes from "./modules/user/user.routes";
+
 import cors from "cors";
+
+// Routes
+import userRoutes from "./modules/user/user.routes";
+import productRoutes from "./modules/product/product.routes";
 
 DbConfig();
 
@@ -18,6 +22,7 @@ app.use(
 );
 
 app.use("/api/user/", userRoutes);
+app.use("/api/products/", productRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server connected to port: ${PORT}`);
