@@ -6,6 +6,7 @@ import cors from "cors";
 // Routes
 import userRoutes from "./modules/user/user.routes";
 import productRoutes from "./modules/product/product.routes";
+import orderRoutes from "./modules/order/order.routes";
 
 DbConfig();
 
@@ -23,6 +24,7 @@ app.use(
 
 app.use("/api/user/", userRoutes);
 app.use("/api/products/", productRoutes);
+app.use("/api/orders/", orderRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server connected to port: ${PORT}`);

@@ -26,8 +26,9 @@ export const protect = (
     ) as ItokenUser;
 
     // Add the user to the request object
-    (req as Request & { user: ItokenUser }).user = user; // Inline assertion. Include ItokenUser type to avoid unassignable.
+    (req as Request & { user: ItokenUser }).user = { _id: user.id }; // Inline assertion. Include ItokenUser type to avoid unassignable.
 
+    console.log(user);
     next();
   } catch (error) {
     res.status(401).json({ message: "Token is not valid" });
