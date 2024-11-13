@@ -1,53 +1,158 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { login } from "../redux/slices/userSlice";
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  Box,
+  Alert,
+} from "@mui/material";
+
+interface DecodedToken {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const user = useSelector((state: any) => state.user.user); // Get user from the Redux store
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    } else {
+      const token = localStorage.getItem("jwt");
+      if (token) {
+        const decoded: DecodedToken = jwtDecode(token);
+        dispatch(login({ id: decoded.id }));
+        navigate("/");
+      }
+    }
+  }, [user, dispatch, navigate]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setMessage("");
+    setMessage(null);
+
+    if (!email || !password) {
+      setMessage({
+        type: "error",
+        text: "Please fill in all required fields.",
+      });
+      return;
+    }
 
     try {
-      const response = await axios.post("/api/signin", { email, password });
-      // Save the token (you might want to save it in local storage or state management)
+      const response = await axios.post(
+        "http://localhost:5001/api/user/signin",
+        { email, password }
+      );
       console.log("Response:", response.data);
-      setMessage("Sign-in successful!");
-      // Redirect or do something else after sign-in
+
+      const token = response.data.token;
+
+      localStorage.setItem("jwt", token);
+
+      setMessage({ type: "success", text: "Sign-in successful!" });
+
+      const decoded = jwtDecode<DecodedToken>(token);
+
+      dispatch(login({ id: decoded.id }));
+
+      navigate("/");
     } catch (error: any) {
-      console.error("Error:", error.response.data.message);
-      setMessage(error.response.data.message);
+      console.error("Error:", error.response?.data?.message);
+      setMessage({
+        type: "error",
+        text: error.response?.data?.message || "An unexpected error occurred.",
+      });
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h2 className="text-2xl mb-4">Sign In</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          required
-          className="mb-2 p-2 border rounded"
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          required
-          className="mb-4 p-2 border rounded"
-        />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+    <Container component="main" maxWidth="xs">
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        minHeight="100vh"
+      >
+        <Typography component="h1" variant="h5" gutterBottom>
           Sign In
-        </button>
-      </form>
-      {message && <p className="mt-4">{message}</p>}
-    </div>
+        </Typography>
+        {message && (
+          <Alert
+            severity={message.type}
+            style={{ width: "100%", marginBottom: 16 }}
+          >
+            {message.text}
+          </Alert>
+        )}
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email"
+            name="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            autoFocus
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="password"
+            label="Password"
+            name="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            disabled={!email || !password}
+            sx={{
+              mt: 3,
+              mb: 2,
+              backgroundColor: "black",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "#333",
+              },
+              "&:focus-visible": {
+                backgroundColor: "black",
+              },
+            }}
+          >
+            Sign In
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 

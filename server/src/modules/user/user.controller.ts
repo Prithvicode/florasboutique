@@ -68,9 +68,13 @@ export const signInUser = async (req: Request, res: Response) => {
       if (!process.env.JWT_SECRET) {
         throw new Error("JWT_SECRET is not defined in env.");
       }
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
+      const token = jwt.sign(
+        { id: user._id, firstName: user.firstName, lastName: user.lastName },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1h",
+        }
+      );
       res.status(200).json({ token });
     }
   } catch (err) {

@@ -7,6 +7,7 @@ import cors from "cors";
 import userRoutes from "./modules/user/user.routes";
 import productRoutes from "./modules/product/product.routes";
 import orderRoutes from "./modules/order/order.routes";
+import path from "path";
 
 DbConfig();
 
@@ -22,6 +23,11 @@ app.use(
   })
 );
 
+// Serve the 'upload' folder as static files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+console.log("Serving images from:", path.join(__dirname, "uploads"));
+
+// API routes
 app.use("/api/user/", userRoutes);
 app.use("/api/products/", productRoutes);
 app.use("/api/orders/", orderRoutes);
