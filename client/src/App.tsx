@@ -8,9 +8,11 @@ import PaymentForm from "./components/PaymentForm";
 import Products from "./page/Shop";
 import ProductDetail from "./page/ProductDetail";
 import Checkout from "./page/Checkout";
+import Navbar from "./sections/Navbar";
 const App = () => {
   return (
     <Router>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signUp" element={<SignUp />} />
