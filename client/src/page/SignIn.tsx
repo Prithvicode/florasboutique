@@ -30,17 +30,24 @@ const SignIn: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const user = useSelector((state: any) => state.user.user); // Get user from the Redux store
+  const user = useSelector((state: any) => state.user.user); // Get user from Redux store
 
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate("/"); // Redirect to home if user is logged in
     } else {
       const token = localStorage.getItem("jwt");
       if (token) {
         const decoded: DecodedToken = jwtDecode(token);
-        dispatch(login({ id: decoded.id }));
-        navigate("/");
+        // Dispatch login with full user information
+        dispatch(
+          login({
+            id: decoded.id,
+            firstName: decoded.firstName,
+            lastName: decoded.lastName,
+          })
+        );
+        navigate("/"); // Redirect to home after decoding and dispatching user info
       }
     }
   }, [user, dispatch, navigate]);
@@ -66,15 +73,21 @@ const SignIn: React.FC = () => {
 
       const token = response.data.token;
 
-      localStorage.setItem("jwt", token);
+      localStorage.setItem("jwt", token); // Store token in localStorage
 
       setMessage({ type: "success", text: "Sign-in successful!" });
 
       const decoded = jwtDecode<DecodedToken>(token);
 
-      dispatch(login({ id: decoded.id }));
+      dispatch(
+        login({
+          id: decoded.id,
+          firstName: decoded.firstName,
+          lastName: decoded.lastName,
+        })
+      );
 
-      navigate("/");
+      navigate("/"); // Redirect to home
     } catch (error: any) {
       console.error("Error:", error.response?.data?.message);
       setMessage({

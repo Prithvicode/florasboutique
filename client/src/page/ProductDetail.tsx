@@ -1,6 +1,8 @@
 import React from "react";
 import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux"; // Import useDispatch
 import { useGetProductByIdQuery } from "../redux/slices/productSlice";
+import { addToCart } from "../redux/slices/cartSlice"; // Import addToCart action
 import {
   CircularProgress,
   Typography,
@@ -9,10 +11,12 @@ import {
   Card,
   CardContent,
   CardMedia,
+  Button,
 } from "@mui/material";
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams();
+  const dispatch = useDispatch(); // Create dispatch function
 
   const { data: product, error, isLoading } = useGetProductByIdQuery(id);
 
@@ -29,6 +33,19 @@ const ProductDetail: React.FC = () => {
   if (!product) {
     return <Typography color="error">Product not found</Typography>;
   }
+
+  const handleAddToCart = () => {
+    // Add product to cart
+    dispatch(
+      addToCart({
+        id: product._id, // Assuming _id is the product identifier
+        name: product.name,
+        price: product.price,
+        imageUrls: product.imageUrls, // Including the product images if needed
+        quantity: 1, // Default quantity is 1
+      })
+    );
+  };
 
   return (
     <Container>
@@ -58,6 +75,14 @@ const ProductDetail: React.FC = () => {
               <Typography variant="body1" mt={2}>
                 {product.description}
               </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddToCart}
+                sx={{ marginTop: 2 }}
+              >
+                Add to Cart
+              </Button>
             </CardContent>
           </Card>
         </Grid>

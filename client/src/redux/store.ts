@@ -4,16 +4,18 @@ import storage from "redux-persist/lib/storage";
 import { combineReducers } from "redux";
 import userReducer from "./slices/userSlice";
 import productApi from "./slices/productSlice";
+import cartReducer from "./slices/cartSlice";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user"],
+  whitelist: ["user", "cart"],
 };
 
 // Combine reducers
 const rootReducer = combineReducers({
   user: userReducer,
+  cart: cartReducer,
   [productApi.reducerPath]: productApi.reducer,
 });
 
@@ -28,5 +30,6 @@ const store = configureStore({
     }).concat(productApi.middleware),
 });
 
+export type RootState = ReturnType<typeof store.getState>;
 export const persistor = persistStore(store);
 export default store;

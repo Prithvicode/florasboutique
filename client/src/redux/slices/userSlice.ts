@@ -1,14 +1,25 @@
-// slices/userSlice.js
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+// Define the type for the user
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
+
+interface UserState {
+  isLoggedIn: boolean;
+  user: User | null;
+}
 
 const userSlice = createSlice({
   name: "user",
   initialState: {
     isLoggedIn: false,
     user: null,
-  },
+  } as UserState,
   reducers: {
-    login: (state, action) => {
+    login: (state, action: PayloadAction<User>) => {
       state.isLoggedIn = true;
       state.user = action.payload;
     },

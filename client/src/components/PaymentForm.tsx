@@ -1,11 +1,21 @@
 import React, { useState } from "react";
 import cryptoJs from "crypto-js";
+import { Typography, Button, Box, CircularProgress } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-function PaymentForm() {
-  const [amount, setAmount] = useState<string>("");
-  const [taxAmount, setTaxAmount] = useState<string>("");
-  const [totalAmount, setTotalAmount] = useState<string>("");
+interface PaymentFormProps {
+  amount: string;
+  taxAmount: string;
+  totalAmount: string;
+}
+
+const PaymentForm: React.FC<PaymentFormProps> = ({
+  amount,
+  taxAmount,
+  totalAmount,
+}) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   // Generate UUID
   const generateUUID = (): string => {
@@ -25,35 +35,29 @@ function PaymentForm() {
     return cryptoJs.enc.Base64.stringify(hash);
   };
 
-  // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!amount || !taxAmount || !totalAmount) {
-      alert("Please fill in all fields.");
-      return;
-    }
 
     setLoading(true);
 
     try {
-      // Generate transaction UUID
       const transactionUUID = generateUUID();
 
       const message = `total_amount=${totalAmount},transaction_uuid=${transactionUUID},product_code=EPAYTEST`;
 
-      // Generate signature
       const signature = createSignature(message, "8gBm/:&EnhH.1/q");
 
       const formData = {
         amount,
-        failure_url: "https://www.google.com/",
+        failure_url:
+          "http://localhost:5173/checkout?status=failed&message=Payment%20Failed", // Redirect to checkout with failure message
         product_delivery_charge: "0",
         product_service_charge: "0",
         product_code: "EPAYTEST",
         signature,
         signed_field_names: "total_amount,transaction_uuid,product_code",
-        success_url: "https://www.youtube.com/",
+        success_url:
+          "http://localhost:5173/checkout?status=success&message=Payment%20Successful", // Redirect to checkout with success message
         tax_amount: taxAmount,
         total_amount: totalAmount,
         transaction_uuid: transactionUUID,
@@ -76,7 +80,6 @@ function PaymentForm() {
         form.appendChild(input);
       });
 
-      // Append the form to the body and submit it
       document.body.appendChild(form);
       form.submit();
     } catch (error) {
@@ -88,48 +91,46 @@ function PaymentForm() {
   };
 
   return (
-    <div>
-      <h1>Initiate Payment</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="amount">Amount:</label>
-          <input
-            type="text"
-            id="amount"
-            name="amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="tax_amount">Tax Amount:</label>
-          <input
-            type="text"
-            id="tax_amount"
-            name="tax_amount"
-            value={taxAmount}
-            onChange={(e) => setTaxAmount(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="total_amount">Total Amount:</label>
-          <input
-            type="text"
-            id="total_amount"
-            name="total_amount"
-            value={totalAmount}
-            onChange={(e) => setTotalAmount(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Processing..." : "Pay with eSewa"}
-        </button>
-      </form>
-    </div>
+    <Box sx={{ padding: 2, boxShadow: 2, borderRadius: 1 }}>
+      <Typography variant="h6" gutterBottom>
+        Initiate Payment
+      </Typography>
+
+      <Box sx={{ marginBottom: 2 }}>
+        <Typography variant="body1" gutterBottom>
+          <strong>Amount:</strong> {amount}
+        </Typography>
+      </Box>
+
+      <Box sx={{ marginBottom: 2 }}>
+        <Typography variant="body1" gutterBottom>
+          <strong>Tax Amount:</strong> {taxAmount}
+        </Typography>
+      </Box>
+
+      <Box sx={{ marginBottom: 2 }}>
+        <Typography variant="body1" gutterBottom>
+          <strong>Total Amount:</strong> {totalAmount}
+        </Typography>
+      </Box>
+
+      <Button
+        fullWidth
+        variant="contained"
+        color="primary"
+        type="submit"
+        onClick={handleSubmit}
+        disabled={loading}
+        sx={{ marginTop: 2 }}
+      >
+        {loading ? (
+          <CircularProgress size={24} color="inherit" />
+        ) : (
+          "Pay with eSewa"
+        )}
+      </Button>
+    </Box>
   );
-}
+};
 
 export default PaymentForm;

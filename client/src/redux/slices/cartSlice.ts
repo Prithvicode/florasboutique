@@ -1,5 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+export interface DeliveryDetails {
+  contactNo: string;
+  address: string;
+  city: string;
+}
+
 export interface CartItem {
   id: string;
   name: string;
@@ -10,10 +16,16 @@ export interface CartItem {
 
 export interface CartState {
   items: CartItem[];
+  deliveryDetails: DeliveryDetails;
 }
 
 const initialState: CartState = {
   items: [],
+  deliveryDetails: {
+    contactNo: "",
+    address: "",
+    city: "",
+  },
 };
 
 // Define the Redux slice
@@ -39,6 +51,7 @@ const cartSlice = createSlice({
 
     clearCart: (state) => {
       state.items = [];
+      state.deliveryDetails = { contactNo: "", address: "", city: "" };
     },
 
     updateQuantity: (
@@ -51,9 +64,18 @@ const cartSlice = createSlice({
         item.quantity = quantity;
       }
     },
+
+    updateDeliveryDetails: (state, action: PayloadAction<DeliveryDetails>) => {
+      state.deliveryDetails = action.payload;
+    },
   },
 });
 
-export const { addToCart, removeFromCart, clearCart, updateQuantity } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  clearCart,
+  updateQuantity,
+  updateDeliveryDetails,
+} = cartSlice.actions;
 export default cartSlice.reducer;
