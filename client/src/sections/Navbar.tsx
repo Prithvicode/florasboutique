@@ -3,9 +3,14 @@ import { Link } from "react-router-dom";
 import Cart from "../components/Cart";
 import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 import { UserIcon } from "@heroicons/react/24/outline";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 const Navbar = () => {
   const [openCart, setOpenCart] = useState(false);
+
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+
   const handleOnClose = () => {
     setOpenCart(!openCart);
     console.log(openCart);
@@ -26,7 +31,7 @@ const Navbar = () => {
             <li onClick={handleOnClose} className="relative">
               <ShoppingBagIcon className="size-6 cursor-pointer " />
               <div className="absolute top-3 -right-2 bg-p1 text-white rounded-full px-2 flex items-center size-5 text-[11px]">
-                0
+                {cartItems.length}
               </div>
             </li>
           </ul>
