@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../sections/Navbar";
 import Hero from "../sections/Hero";
 import ProductCard from "../components/ProductCard";
+import Cta from "../sections/Cta";
 
 const Home = () => {
   return (
@@ -11,6 +12,7 @@ const Home = () => {
         <Hero />
         <h2 className="text-2xl font-semibold mt-9">Our Products</h2>
         <ProductCard />
+        <Cta />
       </div>
     </>
   );

@@ -51,7 +51,7 @@ const Cart: React.FC<OpenProps> = ({ isOpen, setIsOpen }) => {
   return (
     <div
       className={clsx(
-        "border-2 border-red-500 max-sm:w-full sm:w-[500px] bg-white h-full absolute right-0 z-3 p-4",
+        "border-2 border-red-500 max-sm:w-full sm:w-[500px] bg-white h-full absolute right-0 z-3  p-4",
         isOpen ? "opacity-100" : "opacity-0"
       )}
     >
