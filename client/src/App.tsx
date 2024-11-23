@@ -9,6 +9,7 @@ import Products from "./page/Shop";
 import ProductDetail from "./page/ProductDetail";
 import Checkout from "./page/Checkout";
 import Navbar from "./sections/Navbar";
+import Footer from "./sections/Footer";
 const App = () => {
   return (
     <Router>
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/checkout" element={<Checkout />} />
       </Routes>
+      <Footer />
     </Router>
   );
 };

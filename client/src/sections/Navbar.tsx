@@ -22,13 +22,13 @@ const Navbar = () => {
           <Link to={"/"}>
             <h2 className=" font-semibold text-2xl">FlorasBoutique</h2>
           </Link>
-          <ul className=" flex space-x-7 ">
+          <ul className=" flex space-x-7  ">
             <Link to={"/signin"}>
-              <li>
-                <UserIcon className="size-6" />
+              <li className="hover:scale-110 ">
+                <UserIcon className="size-6 " />
               </li>
             </Link>
-            <li onClick={handleOnClose} className="relative">
+            <li onClick={handleOnClose} className="relative hover:scale-110">
               <ShoppingBagIcon className="size-6 cursor-pointer " />
               <div className="absolute top-3 -right-2 bg-p1 text-white rounded-full px-2 flex items-center size-5 text-[11px]">
                 {cartItems.length}

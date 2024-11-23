@@ -1,9 +1,10 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Cta = () => {
   return (
-    <div className=" flex items-center max-sm:flex-col gap-2 h-[400px] w-full">
-      <div className="w-1/2 pl-6 max-sm:w-full bg-black">
+    <div className="  flex items-center  max-sm:h-[700px] max-sm:flex-col justify-between h-[400px] w-full">
+      <div className="w-1/2 bg-white  max-sm:w-full ">
         <img
           src="/cta1.jpg"
           alt=""
@@ -14,13 +15,14 @@ const Cta = () => {
         <h2 className="text-3xl font-semibold ">
           Find Your Perfect Dress & Save
         </h2>
-        <p className="text-lg w-1/2">
+        <p className="text-lg text-slate-800 max-sm:w-3/4 w-1/2">
           Shop the latest styles and get exclusive discounts today!
         </p>
-
-        <button className="bg-black text-white py-3 px-5 mt-4 ">
-          Shop Now
-        </button>
+        <Link to="/shop">
+          <button className="bg-black hover:bg-black/50 text-white py-3 px-8 mt-4 ">
+            Shop Now
+          </button>
+        </Link>
       </div>
     </div>
   );

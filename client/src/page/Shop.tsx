@@ -76,7 +76,7 @@ const Products: React.FC = () => {
                     <img
                       src={`http://localhost:5001${currentImage}`}
                       alt={product.name}
-                      className="aspect-square w-full rounded-lg bg-gray-200 object-cover xl:aspect-[7/8] transition-opacity ease-in-out duration-300"
+                      className="  bg-gray-200 object-cover xl:aspect-[4/5] transition-opacity ease-in-out duration-300"
                       onClick={() =>
                         handleToggleImage(product._id, product.imageUrls)
                       }
