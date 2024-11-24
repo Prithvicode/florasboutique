@@ -2,10 +2,9 @@ import React from "react";
 import clsx from "clsx";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
-import { Button, IconButton, Typography } from "@mui/material";
 import { PlusIcon, MinusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { updateQuantity, removeFromCart } from "../redux/slices/cartSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface OpenProps {
   isOpen: boolean;
@@ -46,97 +45,127 @@ const Cart: React.FC<OpenProps> = ({ isOpen, setIsOpen }) => {
 
   const handleCheckout = () => {
     navigate("/checkout");
+    setIsOpen(false);
   };
 
   return (
     <div
       className={clsx(
-        "bg-black bg-opacity-50 z-40 w-full h-screen fixed top-0 left-0 transition-opacity duration-300",
-        { hidden: !isOpen, "opacity-100": isOpen, "opacity-0": !isOpen }
+        "bg-black bg-opacity-80 z-40 w-full h-screen fixed top-0 left-0 transition-opacity duration-300 font-ovo ",
+        isOpen
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
       )}
       onClick={handleOnClose}
     >
       <div
-        className="border-2 border-red-500 max-sm:w-full sm:w-[500px] bg-white h-full absolute right-0 z-50 p-4 transition-transform duration-300"
-        onClick={(e) => e.stopPropagation()} // Prevent close on child click
+        className={clsx(
+          "border-2  max-sm:w-full sm:w-[500px] bg-white h-full absolute transition-all right-0 z-50 px-4  ",
+          isOpen ? "animate-slideIn" : "animate-slideOut"
+        )}
+        onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={handleOnClose}
-          className="absolute top-2 right-3 text-3xl"
+          className="absolute top-0 right-3 text-6xl"
         >
           &times;
         </button>
-        <div className="py-5">
-          <h3>Cart Items</h3>
+        <div className="py-6 mt-3">
+          <h3 className="text-xl font-semibold mb-3">Your Cart</h3>
           {cartItems.length === 0 ? (
-            <p>Your cart is empty.</p>
+            <>
+              <div className="flex flex-col space-y-5">
+                <p className="text-gray-500 text-6xl mt-5 ">
+                  Your cart is empty.
+                </p>
+
+                <Link
+                  to="/shop"
+                  className="bg-black text-white px-4 py-2 text-center hover:bg-black/50"
+                  onClick={handleOnClose}
+                >
+                  Shop Here
+                </Link>
+                <img src="" alt="" />
+              </div>
+            </>
           ) : (
             <div>
               {cartItems.map((item) => (
                 <div
                   key={item.id}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "1rem",
-                  }}
+                  className="flex justify-between items-center border-[1px] py-3 px-2 mb-4"
                 >
-                  {item.imageUrls && item.imageUrls.length > 0 && (
-                    <img
-                      src={`http://localhost:5001${item.imageUrls[0]}`}
-                      alt={item.name}
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        marginRight: "1rem",
-                      }}
-                    />
-                  )}
-                  <div style={{ flex: 1 }}>
-                    <Typography variant="body1">{item.name}</Typography>
+                  <div className="flex">
+                    {item.imageUrls && item.imageUrls.length > 0 && (
+                      <img
+                        src={`http://localhost:5001${item.imageUrls[0]}`}
+                        alt={item.name}
+                        className="w-14 mr-4 aspect-[4/5] object-cover"
+                      />
+                    )}
+
+                    <div className="flex-1">
+                      <p className="text-md font-medium">{item.name}</p>
+                    </div>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <IconButton
-                      onClick={() => handleDecreaseQuantity(item.id)}
-                      disabled={item.quantity <= 1}
-                      style={{ padding: "4px" }}
-                    >
-                      <MinusIcon className="h-5 w-5 text-gray-500" />
-                    </IconButton>
-                    <Typography variant="body2" style={{ margin: "0 8px" }}>
-                      {item.quantity}
-                    </Typography>
-                    <IconButton
-                      onClick={() => handleIncreaseQuantity(item.id)}
-                      style={{ padding: "4px" }}
-                    >
-                      <PlusIcon className="h-5 w-5 text-gray-500" />
-                    </IconButton>
-                  </div>
-                  <IconButton onClick={() => handleRemoveItem(item.id)}>
-                    <TrashIcon className="h-5 w-5 text-red-500" />
-                  </IconButton>
-                  <div>
-                    <Typography variant="body2">Rs.{item.price}</Typography>
+                  <div className="flex flex-col justify-center  ">
+                    <div className="flex space-x-1 ">
+                      <div className="flex items-center  border-2">
+                        <button
+                          onClick={() => handleDecreaseQuantity(item.id)}
+                          disabled={item.quantity <= 1}
+                          className="p-1"
+                        >
+                          <MinusIcon className="size-4 text-gray-500 cursor-pointer" />
+                        </button>
+                        <span className="mx-2 text-lg font-medium">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => handleIncreaseQuantity(item.id)}
+                          className="p-1"
+                        >
+                          <PlusIcon className="size-4 text-gray-500" />
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveItem(item.id)}
+                        className="p-1"
+                      >
+                        <TrashIcon className="size-4 text-black" />
+                      </button>
+                    </div>
+                    <div className="relative top-3">
+                      <p className="text-lg font-medium tracking-wider">
+                        Rs.{item.price}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
         </div>
-        <div>
-          <h4>Subtotal: Rs. {subtotal}</h4>
-        </div>
         {cartItems.length > 0 && (
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ marginTop: "1rem" }}
-            onClick={handleCheckout}
-          >
-            Checkout
-          </Button>
+          <>
+            <div className="flex justify-between px-4">
+              <h4 className="text-md font-semibold uppercase tracking-wider">
+                Subtotal:{" "}
+              </h4>
+              <h4 className="text-lg font-semibold tracking-wider">
+                Rs. {subtotal}
+              </h4>
+            </div>
+
+            <button
+              className="w-full mt-4   py-3 bg-black text-white font-semibold font-sans uppercase hover:bg-black/50"
+              onClick={handleCheckout}
+            >
+              Check Out
+            </button>
+          </>
         )}
       </div>
     </div>
