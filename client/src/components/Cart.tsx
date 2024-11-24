@@ -60,7 +60,7 @@ const Cart: React.FC<OpenProps> = ({ isOpen, setIsOpen }) => {
     >
       <div
         className={clsx(
-          "border-2  max-sm:w-full sm:w-[500px] bg-white h-full absolute transition-all right-0 z-50 px-4  ",
+          "border-2 max-sm:w-full sm:w-[500px] bg-white overflow-hidden h-full absolute transition-all right-0 z-50 px-4",
           isOpen ? "animate-slideIn" : "animate-slideOut"
         )}
         onClick={(e) => e.stopPropagation()}
@@ -71,27 +71,27 @@ const Cart: React.FC<OpenProps> = ({ isOpen, setIsOpen }) => {
         >
           &times;
         </button>
+
         <div className="py-6 mt-3">
           <h3 className="text-xl font-semibold mb-3">Your Cart</h3>
           {cartItems.length === 0 ? (
-            <>
-              <div className="flex flex-col space-y-5">
-                <p className="text-gray-500 text-6xl mt-5 ">
-                  Your cart is empty.
-                </p>
+            <div className="flex flex-col space-y-5">
+              <p className="text-gray-500 text-6xl mt-5">Your cart is empty.</p>
 
-                <Link
-                  to="/shop"
-                  className="bg-black text-white px-4 py-2 text-center hover:bg-black/50"
-                  onClick={handleOnClose}
-                >
-                  Shop Here
-                </Link>
-                <img src="" alt="" />
-              </div>
-            </>
+              <Link
+                to="/shop"
+                className="bg-black text-white px-4 py-2 text-center hover:bg-black/50"
+                onClick={handleOnClose}
+              >
+                Shop Here
+              </Link>
+            </div>
           ) : (
-            <div>
+            // Scrollable cart items section
+            <div
+              className="max-h-[70vh] md:max-h-[75vh] overflow-y-auto pr-2"
+              style={{ scrollbarWidth: "thin" }}
+            >
               {cartItems.map((item) => (
                 <div
                   key={item.id}
@@ -110,24 +110,25 @@ const Cart: React.FC<OpenProps> = ({ isOpen, setIsOpen }) => {
                       <p className="text-md font-medium">{item.name}</p>
                     </div>
                   </div>
-                  <div className="flex flex-col justify-center  ">
-                    <div className="flex space-x-1 ">
-                      <div className="flex items-center  border-2">
+                  <div className="flex flex-col justify-center">
+                    <div className="flex space-x-1">
+                      {/* Quantity  */}
+                      <div className="flex items-center border-2 h-9 max-w-24 space-x-3  px-1">
                         <button
                           onClick={() => handleDecreaseQuantity(item.id)}
                           disabled={item.quantity <= 1}
-                          className="p-1"
+                          className="h-full w-5 flex items-center justify-center"
                         >
                           <MinusIcon className="size-4 text-gray-500 cursor-pointer" />
                         </button>
-                        <span className="mx-2 text-lg font-medium">
+                        <span className="mx-2 text-lg h-full flex items-center justify-center font-medium">
                           {item.quantity}
                         </span>
                         <button
                           onClick={() => handleIncreaseQuantity(item.id)}
-                          className="p-1"
+                          className="h-full w-5 flex items-center justify-center"
                         >
-                          <PlusIcon className="size-4 text-gray-500" />
+                          <PlusIcon className="size-4  text-gray-500" />
                         </button>
                       </div>
                       <button
@@ -147,26 +148,26 @@ const Cart: React.FC<OpenProps> = ({ isOpen, setIsOpen }) => {
               ))}
             </div>
           )}
-        </div>
-        {cartItems.length > 0 && (
-          <>
-            <div className="flex justify-between px-4">
-              <h4 className="text-md font-semibold uppercase tracking-wider">
-                Subtotal:{" "}
-              </h4>
-              <h4 className="text-lg font-semibold tracking-wider">
-                Rs. {subtotal}
-              </h4>
-            </div>
+          {cartItems.length > 0 && (
+            <>
+              <div className="flex justify-between px-4">
+                <h4 className="text-md font-semibold uppercase tracking-wider">
+                  Subtotal:{" "}
+                </h4>
+                <h4 className="text-lg font-semibold tracking-wider">
+                  Rs. {subtotal}
+                </h4>
+              </div>
 
-            <button
-              className="w-full mt-4   py-3 bg-black text-white font-semibold font-sans uppercase hover:bg-black/50"
-              onClick={handleCheckout}
-            >
-              Check Out
-            </button>
-          </>
-        )}
+              <button
+                className="w-full mt-4 py-3 bg-black text-white font-semibold font-sans uppercase hover:bg-black/50"
+                onClick={handleCheckout}
+              >
+                Check Out
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
