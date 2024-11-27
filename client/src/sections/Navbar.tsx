@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Cart from "../components/Cart";
-import { ShoppingBagIcon } from "@heroicons/react/24/outline";
+import {
+  ArchiveBoxIcon,
+  DocumentTextIcon,
+  ShoppingBagIcon,
+} from "@heroicons/react/24/outline";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
@@ -13,6 +17,8 @@ const Navbar = () => {
 
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const user = useSelector((state: RootState) => state.user.user);
+  const orders = useSelector((state: RootState) => state.orders.orders);
+  console.log(orders);
   const dispatch = useDispatch();
 
   const isAdmin = user?.role === "admin";
@@ -61,10 +67,17 @@ const Navbar = () => {
             {isAdmin && (
               <>
                 <Link to={"/products"}>
-                  <li className="hover:scale-110">Products</li>
+                  <li className="hover:scale-110">
+                    <ArchiveBoxIcon className="size-6 cursor-pointer" />
+                  </li>
                 </Link>
                 <Link to={"/orders"}>
-                  <li className="hover:scale-110">Orders</li>
+                  <li className="relative">
+                    <DocumentTextIcon className="size-6 cursor-pointer" />
+                    <div className="absolute top-3 -right-2 bg-p1 text-white rounded-full px-2 flex items-center size-5 text-[11px]">
+                      {orders.length}
+                    </div>
+                  </li>
                 </Link>
               </>
             )}

@@ -137,6 +137,7 @@ export const getOrder = async (req: Request, res: Response) => {
           "productDetails.name": 1,
           "productDetails.price": 1,
           "productDetails.imageUrls": 1,
+          deliveryDetail: 1,
         },
       },
     ]);
@@ -179,4 +180,31 @@ export const getOrder = async (req: Request, res: Response) => {
 // };
 
 // PUT
+
+export const updateOrder = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const existingOrder = await Order.findById(id);
+
+    if (!existingOrder) {
+      res.status(404).json({ message: "Order not found" });
+      return;
+    }
+
+    existingOrder.status = status;
+
+    const updatedOrder = await existingOrder.save();
+
+    res.status(200).json(updatedOrder);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // DELETE
