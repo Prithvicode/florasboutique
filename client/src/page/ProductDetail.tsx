@@ -12,6 +12,8 @@ import {
   ChevronLeftIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams();
@@ -55,6 +57,14 @@ const ProductDetail: React.FC = () => {
         quantity: quantity,
       })
     );
+    toast.success(`${product.name} added to cart!`, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
   };
 
   const toggleOpenDescription = () => {
@@ -74,8 +84,9 @@ const ProductDetail: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 font-ovo">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="container mx-auto px-4py-8 font-ovo">
+      <ToastContainer />
+      <div className="grid grid-cols-1 md:grid-cols-2  gap-6">
         {/* Image section on the left */}
         <div className="flex justify-center relative">
           {product.imageUrls && product.imageUrls.length > 0 && (
@@ -85,24 +96,25 @@ const ProductDetail: React.FC = () => {
                 alt={product.name}
                 className="w-full h-auto object-cover shadow-lg"
               />
+              <div className="relative -top-72 ">
+                {/* Right Arrow */}
+                <button
+                  onClick={nextImage}
+                  className="absolute right-6 top-1/2 transform -translate-y-1/2 hover:text-white text-black p-2 rounded-full hover:bg-black/30"
+                >
+                  <ChevronRightIcon className="size-14" />
+                </button>
+
+                {/* Left Arrow */}
+                <button
+                  onClick={prevImage}
+                  className="absolute left-6 top-1/2 transform -translate-y-1/2 hover:text-white text-black rounded-full p-2  hover:bg-black/30"
+                >
+                  <ChevronLeftIcon className="size-14" />
+                </button>
+              </div>
             </div>
           )}
-
-          {/* Right Arrow */}
-          <button
-            onClick={nextImage}
-            className="absolute right-9 top-1/2 transform -translate-y-1/2 text-gray-400 p-2 rounded-full hover:bg-black/30"
-          >
-            <ChevronRightIcon className="size-14" />
-          </button>
-
-          {/* Left Arrow */}
-          <button
-            onClick={prevImage}
-            className="absolute left-9 top-1/2 transform -translate-y-1/2 text-gray-400 rounded-full p-2  hover:bg-black/30"
-          >
-            <ChevronLeftIcon className="size-14" />
-          </button>
         </div>
 
         {/* Product details section on the right */}
@@ -139,7 +151,7 @@ const ProductDetail: React.FC = () => {
             <h2 className="text-xl">Sizes: </h2>
             <div className="flex space-x-2">
               {product.size[0].split(",").map((s: any) => (
-                <div className=" border-2 p-6 border-black text-center h-14 w-11 flex items-center justify-center">
+                <div className="border-2 p-6 border-black text-center h-14 w-11 flex items-center justify-center">
                   {s}
                 </div>
               ))}

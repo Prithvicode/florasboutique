@@ -85,6 +85,8 @@ const Cart: React.FC<OpenProps> = ({ isOpen, setIsOpen }) => {
               >
                 Shop Here
               </Link>
+
+              <img src="/floraWomen.jpg" alt="" />
             </div>
           ) : (
             // Scrollable cart items section
@@ -140,7 +142,7 @@ const Cart: React.FC<OpenProps> = ({ isOpen, setIsOpen }) => {
                     </div>
                     <div className="relative top-3">
                       <p className="text-lg font-medium tracking-wider">
-                        Rs.{item.price}
+                        Rs.{item.price * item.quantity}
                       </p>
                     </div>
                   </div>

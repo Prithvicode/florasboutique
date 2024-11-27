@@ -1,14 +1,4 @@
 import React, { useEffect } from "react";
-import {
-  TextField,
-  Typography,
-  Grid,
-  Box,
-  Paper,
-  IconButton,
-  Snackbar,
-  Alert,
-} from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 import { TrashIcon } from "@heroicons/react/24/outline";
@@ -19,6 +9,8 @@ import {
   updateDeliveryDetails,
 } from "../redux/slices/cartSlice";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CheckoutPage: React.FC = () => {
   const deliveryDetails = useSelector(
@@ -27,14 +19,6 @@ const CheckoutPage: React.FC = () => {
   );
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const user = useSelector((state: RootState) => state.user.user);
-
-  const [openSnackbar, setOpenSnackbar] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = React.useState<
-    "success" | "error"
-  >("success");
-  const [thankYouMessage, setThankYouMessage] = React.useState(false);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -53,6 +37,7 @@ const CheckoutPage: React.FC = () => {
 
   const buildOrderData = () => {
     if (!user) return null;
+
     return {
       userId: user.id,
       orderItems: cartItems.map((item) => ({
@@ -68,33 +53,25 @@ const CheckoutPage: React.FC = () => {
     const params = new URLSearchParams(window.location.search);
     const status = params.get("status");
 
-    if (status === "success" && !thankYouMessage) {
-      setThankYouMessage(true);
+    if (status === "success") {
       const orderData = buildOrderData();
+
       if (orderData) {
         const token = localStorage.getItem("jwt");
 
         createOrder(orderData, token)
-          .then((data) => {
-            console.log("Order successfully created:", data);
-            showSnackbar("Thank you for your order!", "success");
+          .then(() => {
+            toast.success("Thank you for your order!");
             dispatch(clearCart());
           })
-          .catch((error) => {
-            console.error("Error creating order:", error);
-            showSnackbar("There was an error with your order.", "error");
+          .catch(() => {
+            toast.error("There was an error with your order.");
           });
       }
     } else if (status === "failed") {
-      showSnackbar("Payment failed. Please try again.", "error");
+      toast.error("Payment failed. Please try again.");
     }
-  }, [cartItems, deliveryDetails, user, dispatch, thankYouMessage]);
-
-  const showSnackbar = (message: string, severity: "success" | "error") => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setOpenSnackbar(true);
-  };
+  }, []);
 
   const createOrder = async (orderData: any, token: string | null) => {
     const response = await fetch("http://localhost:5001/api/orders", {
@@ -105,11 +82,9 @@ const CheckoutPage: React.FC = () => {
       },
       body: JSON.stringify(orderData),
     });
-
     if (!response.ok) {
       throw new Error("Failed to create order");
     }
-
     return response.json();
   };
 
@@ -117,135 +92,108 @@ const CheckoutPage: React.FC = () => {
     dispatch(removeFromCart(id));
   };
 
-  const handleCloseSnackbar = () => {
-    setOpenSnackbar(false);
-  };
-
   return (
-    <Box sx={{ padding: "2rem" }}>
-      <Grid container spacing={4}>
-        <Grid item xs={12} sm={6}>
-          <Paper sx={{ padding: "2rem", boxShadow: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Delivery Details
-            </Typography>
-            <form onSubmit={(e) => e.preventDefault()}>
-              <TextField
-                fullWidth
-                label="Contact No."
+    <div className="p-8 font-ovo">
+      <ToastContainer />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+        {/* Delivery Details */}
+        <div className="bg-white shadow-lg p-6 rounded-lg">
+          <h2 className="text-lg font-semibold mb-4">Delivery Details</h2>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="mb-4">
+              <label
+                className="block text-sm font-medium mb-2"
+                htmlFor="contactNo"
+              >
+                Contact No.
+              </label>
+              <input
+                id="contactNo"
                 name="contactNo"
+                type="tel"
                 value={deliveryDetails.contactNo || ""}
                 onChange={handleChange}
-                type="tel"
-                margin="normal"
+                className="w-full p-2 border border-gray-300 rounded-md"
                 required
               />
-              <TextField
-                fullWidth
-                label="Address"
+            </div>
+            <div className="mb-4">
+              <label
+                className="block text-sm font-medium mb-2"
+                htmlFor="address"
+              >
+                Address
+              </label>
+              <input
+                id="address"
                 name="address"
                 value={deliveryDetails.address || ""}
                 onChange={handleChange}
-                margin="normal"
+                className="w-full p-2 border border-gray-300 rounded-md"
                 required
               />
-              <TextField
-                fullWidth
-                label="City"
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2" htmlFor="city">
+                City
+              </label>
+              <input
+                id="city"
                 name="city"
                 value={deliveryDetails.city || ""}
                 onChange={handleChange}
-                margin="normal"
+                className="w-full p-2 border border-gray-300 rounded-md"
                 required
               />
-            </form>
-            <PaymentForm
-              amount={subtotal.toFixed(2)}
-              taxAmount={taxAmount}
-              totalAmount={totalAmount}
-            />
-          </Paper>
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <Paper sx={{ padding: "2rem", boxShadow: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Cart Items
-            </Typography>
-            <div>
-              {cartItems.length === 0 ? (
-                <Typography variant="body1">Your cart is empty.</Typography>
-              ) : (
-                cartItems.map((item) => (
-                  <div
-                    key={item.id}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "1rem",
-                    }}
-                  >
-                    {item.imageUrls && item.imageUrls.length > 0 && (
-                      <img
-                        src={`http://localhost:5001${item.imageUrls[0]}`}
-                        alt={item.name}
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          marginRight: "1rem",
-                          objectFit: "cover",
-                        }}
-                      />
-                    )}
-                    <div style={{ flex: 1 }}>
-                      <Typography variant="body1">{item.name}</Typography>
-                      <Typography variant="body2">${item.price} x</Typography>
-                      <Typography variant="body2">{item.quantity}</Typography>
-                    </div>
-                    <IconButton onClick={() => handleRemoveItem(item.id)}>
-                      <TrashIcon className="h-5 w-5 text-red-500" />
-                    </IconButton>
-                    <Typography variant="body2">
-                      ${item.price * item.quantity}
-                    </Typography>
-                  </div>
-                ))
-              )}
             </div>
-            <div>
-              <Typography variant="h6" style={{ marginTop: "1rem" }}>
-                Subtotal: ${subtotal}
-              </Typography>
-              <Typography variant="body1" style={{ marginTop: "0.5rem" }}>
-                Shipping: Free
-              </Typography>
-            </div>
-          </Paper>
-        </Grid>
-      </Grid>
+          </form>
+          <PaymentForm
+            amount={subtotal.toFixed(2)}
+            taxAmount={taxAmount}
+            totalAmount={totalAmount}
+          />
+        </div>
 
-      {thankYouMessage && (
-        <Typography variant="h4" align="center" style={{ marginTop: "2rem" }}>
-          Thank you for your order! We will process it shortly.
-        </Typography>
-      )}
-
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </Box>
+        {/* Cart Items */}
+        <div className="bg-white shadow-lg p-6 rounded-lg">
+          <h2 className="text-lg font-semibold mb-4">Cart Items</h2>
+          {cartItems.length === 0 ? (
+            <p className="text-gray-500">Your cart is empty.</p>
+          ) : (
+            cartItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center border-2 p-2 mb-4"
+              >
+                {item.imageUrls && item.imageUrls.length > 0 && (
+                  <img
+                    src={`http://localhost:5001${item.imageUrls[0]}`}
+                    alt={item.name}
+                    className="w-16 object-cover mr-4"
+                  />
+                )}
+                <div className="flex-1">
+                  <p className="text-sm font-medium">{item.name}</p>
+                  <p className="text-xs text-gray-600">
+                    ${item.price} x {item.quantity}
+                  </p>
+                </div>
+                <button onClick={() => handleRemoveItem(item.id)}>
+                  <TrashIcon className="h-5 w-5 text-red-500" />
+                </button>
+                <p className="text-sm font-medium ml-4">
+                  ${item.price * item.quantity}
+                </p>
+              </div>
+            ))
+          )}
+          <div className="mt-4">
+            <p className="font-semibold text-lg">Subtotal: ${subtotal}</p>
+            <p className="text-sm text-gray-600">Shipping: Free</p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

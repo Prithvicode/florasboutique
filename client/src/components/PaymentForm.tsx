@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import cryptoJs from "crypto-js";
-import { Typography, Button, Box, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 interface PaymentFormProps {
@@ -15,7 +14,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   totalAmount,
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const navigate = useNavigate();
 
   // Generate UUID
   const generateUUID = (): string => {
@@ -91,45 +89,64 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   };
 
   return (
-    <Box sx={{ padding: 2, boxShadow: 2, borderRadius: 1 }}>
-      <Typography variant="h6" gutterBottom>
-        Initiate Payment
-      </Typography>
+    <div className="p-4 shadow-md rounded-md bg-white font-ovo">
+      <h6 className="text-lg font-semibold mb-4">Initiate Payment</h6>
 
-      <Box sx={{ marginBottom: 2 }}>
-        <Typography variant="body1" gutterBottom>
+      <div className="mb-4">
+        <p className="text-base">
           <strong>Amount:</strong> {amount}
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
-      <Box sx={{ marginBottom: 2 }}>
-        <Typography variant="body1" gutterBottom>
+      <div className="mb-4">
+        <p className="text-base">
           <strong>Tax Amount:</strong> {taxAmount}
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
-      <Box sx={{ marginBottom: 2 }}>
-        <Typography variant="body1" gutterBottom>
+      <div className="mb-4">
+        <p className="text-base">
           <strong>Total Amount:</strong> {totalAmount}
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
-      <Button
-        fullWidth
-        variant="contained"
-        color="primary"
+      <button
+        className={`w-full bg-black text-white font-semibold py-2 px-4 rounded-md mt-4 ${
+          loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+        }`}
         type="submit"
         onClick={handleSubmit}
         disabled={loading}
-        sx={{ marginTop: 2 }}
       >
         {loading ? (
-          <CircularProgress size={24} color="inherit" />
+          <svg
+            className="animate-spin h-5 w-5 mx-auto text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
         ) : (
-          "Pay with eSewa"
+          <div className="flex justify-center font-sans   items-center gap-4">
+            Pay with eSewa
+            <img src="/esewalogo.png" alt="" className="size-6" />
+          </div>
         )}
-      </Button>
-    </Box>
+      </button>
+    </div>
   );
 };
 

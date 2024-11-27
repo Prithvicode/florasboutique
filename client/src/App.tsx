@@ -10,6 +10,7 @@ import ProductDetail from "./page/ProductDetail";
 import Checkout from "./page/Checkout";
 import Navbar from "./sections/Navbar";
 import Footer from "./sections/Footer";
+import NotFound from "./page/NotFound";
 const App = () => {
   return (
     <Router>
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/shop" element={<Products />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
     </Router>

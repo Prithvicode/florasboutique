@@ -1,6 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { jwtDecode } from "jwt-decode";
+import { login } from "../redux/slices/userSlice"; // Update the import based on your file structure
+
+interface DecodedToken {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -9,7 +18,33 @@ const SignIn: React.FC = () => {
     type: "success" | "error";
     text: string;
   } | null>(null);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.user.user);
+
+  useEffect(() => {
+    if (user) {
+      navigate("/"); // Redirect to home if user is logged in
+    } else {
+      const token = localStorage.getItem("jwt");
+      if (token) {
+        try {
+          const decoded: DecodedToken = jwtDecode(token);
+          dispatch(
+            login({
+              id: decoded.id,
+              firstName: decoded.firstName,
+              lastName: decoded.lastName,
+            })
+          );
+          navigate("/"); // Redirect to home after updating Redux
+        } catch (err) {
+          console.error("Token decoding error:", err);
+        }
+      }
+    }
+  }, [user, dispatch, navigate]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,17 +63,25 @@ const SignIn: React.FC = () => {
         "http://localhost:5001/api/user/signin",
         { email, password }
       );
+
       const token = response.data.token;
-
-      localStorage.setItem("jwt", token);
-
+      localStorage.setItem("jwt", token); // Store token in localStorage
       setMessage({ type: "success", text: "Sign-in successful!" });
 
-      // Redirect to home page after successful sign-in
+      const decoded = jwtDecode<DecodedToken>(token);
+      dispatch(
+        login({
+          id: decoded.id,
+          firstName: decoded.firstName,
+          lastName: decoded.lastName,
+        })
+      );
+
       setTimeout(() => {
-        navigate("/");
+        navigate("/"); // Redirect to home page
       }, 1000);
     } catch (error: any) {
+      console.error("Error:", error.response?.data?.message);
       setMessage({
         type: "error",
         text: error.response?.data?.message || "An unexpected error occurred.",
@@ -55,15 +98,15 @@ const SignIn: React.FC = () => {
       {/* Notification Popup */}
       {message && (
         <div
-          className={`fixed top-0 right-0 m-4 p-4 rounded-md shadow-md  border-2 bg-white   ${
-            message.type === "success" ? " border-green-500" : " border-red-500"
+          className={`fixed top-0 right-0 m-4 p-4 rounded-md shadow-md border-2 bg-white ${
+            message.type === "success" ? "border-green-500" : "border-red-500"
           }`}
         >
-          <div className="flex justify-between items-center ">
+          <div className="flex justify-between items-center">
             <span>{message.text}</span>
             <button
               onClick={handleCloseNotification}
-              className="text-black hover:text-gray-200 relative -top-4 -right-2"
+              className="text-black hover:text-gray-500"
             >
               &times;
             </button>
@@ -100,22 +143,12 @@ const SignIn: React.FC = () => {
           </div>
 
           <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-900"
-              >
-                Password
-              </label>
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-semibold text-black hover:text-black/50"
-                >
-                  Forgot password?
-                </a>
-              </div>
-            </div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-900"
+            >
+              Password
+            </label>
             <div className="mt-2">
               <input
                 id="password"
