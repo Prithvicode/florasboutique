@@ -112,7 +112,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
       <button
         className={`w-full bg-black text-white font-semibold py-2 px-4 rounded-md mt-4 ${
-          loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+          loading ? "opacity-50 cursor-not-allowed" : "hover:bg-black/50"
         }`}
         type="submit"
         onClick={handleSubmit}

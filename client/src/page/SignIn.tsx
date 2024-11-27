@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
-import { login } from "../redux/slices/userSlice"; // Update the import based on your file structure
+import { login } from "../redux/slices/userSlice"; 
 
 interface DecodedToken {
   id: string;
   firstName: string;
   lastName: string;
+  role: string;
 }
 
 const SignIn: React.FC = () => {
@@ -25,7 +26,7 @@ const SignIn: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/"); // Redirect to home if user is logged in
+      navigate("/"); 
     } else {
       const token = localStorage.getItem("jwt");
       if (token) {
@@ -36,9 +37,10 @@ const SignIn: React.FC = () => {
               id: decoded.id,
               firstName: decoded.firstName,
               lastName: decoded.lastName,
+              role: decoded.role,
             })
           );
-          navigate("/"); // Redirect to home after updating Redux
+          navigate("/"); 
         } catch (err) {
           console.error("Token decoding error:", err);
         }
@@ -74,6 +76,7 @@ const SignIn: React.FC = () => {
           id: decoded.id,
           firstName: decoded.firstName,
           lastName: decoded.lastName,
+          role: decoded.role,
         })
       );
 
@@ -171,6 +174,11 @@ const SignIn: React.FC = () => {
             </button>
           </div>
         </form>
+        <div>
+          <Link to="/signup" className="hover:text-black/50 text-lg underline">
+            Sign Up
+          </Link>
+        </div>
       </div>
     </div>
   );

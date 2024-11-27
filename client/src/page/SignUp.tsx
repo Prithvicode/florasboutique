@@ -30,11 +30,9 @@ const SignUp: React.FC = () => {
 
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const token = localStorage.getItem("jwt");
     if (token) {
-
       navigate("/");
     }
   }, [navigate]);
@@ -50,6 +48,7 @@ const SignUp: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setMessage(null); // Reset message on submit
+    console.log(formData);
 
     try {
       const response = await fetch(
@@ -73,7 +72,7 @@ const SignUp: React.FC = () => {
       console.log("User created:", data);
 
       setTimeout(() => {
-        navigate("/signin"); 
+        navigate("/signin");
       }, 2000);
     } catch (error) {
       setMessage({ type: "error", text: "Error creating user." });
@@ -152,10 +151,10 @@ const SignUp: React.FC = () => {
             sx={{
               mt: 3,
               mb: 2,
-              backgroundColor: "black", 
-              color: "white", 
+              backgroundColor: "black",
+              color: "white",
               "&:hover": {
-                backgroundColor: "#333", 
+                backgroundColor: "#333",
               },
             }}
           >

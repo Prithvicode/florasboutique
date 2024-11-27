@@ -194,8 +194,8 @@ const ProductForm: React.FC = () => {
                   component="span"
                   fullWidth
                   sx={{
-                    backgroundColor: "#1976d2",
-                    "&:hover": { backgroundColor: "#1565c0" },
+                    backgroundColor: "#000000",
+                    "&:hover": { backgroundColor: "#00000" },
                   }}
                 >
                   Upload Image 1
@@ -252,8 +252,8 @@ const ProductForm: React.FC = () => {
                   component="span"
                   fullWidth
                   sx={{
-                    backgroundColor: "#1976d2",
-                    "&:hover": { backgroundColor: "#1565c0" },
+                    backgroundColor: "#000000",
+                    "&:hover": { backgroundColor: "#00000" },
                   }}
                 >
                   Upload Image 2
@@ -297,7 +297,15 @@ const ProductForm: React.FC = () => {
         </Grid>
 
         <Box mt={2}>
-          <Button type="submit" variant="contained" fullWidth>
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{
+              backgroundColor: "#000000",
+              "&:hover": { backgroundColor: "#00000" },
+            }}
+          >
             Add Product
           </Button>
         </Box>

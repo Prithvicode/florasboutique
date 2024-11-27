@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Order } from "./order.model";
 import Product from "../product/product.model";
+import mongoose from "mongoose";
 
 interface OrderItem {
   productId: string;
@@ -73,10 +74,11 @@ export const addOrder = async (req: Request, res: Response) => {
 // GET ALL
 export const listOrders = async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { user: { _id: string } }).user._id;
-    console.log(userId);
+    // const userId = (req as Request & { user: { _id: string } }).user._id;
+    // console.log(userId);
 
-    const orders = await Order.find({ userId });
+    const orders = await Order.find();
+    console.log(orders);
 
     if (orders.length > 0) {
       res.status(200).json(orders);
@@ -93,28 +95,88 @@ export const listOrders = async (req: Request, res: Response) => {
 };
 
 // GET
+
 export const getOrder = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    console.log(id);
-    const order = await Order.findById(id);
+    console.log("Fetching order with ID:", id);
 
-    if (order) {
-      res.status(200).json({
-        order: order,
-      });
+    // Using aggregation to join order, user, and product details
+    const order = await Order.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(id) } }, // Match order by ID
+      {
+        $lookup: {
+          from: "users", // Join with the users collection
+          localField: "userId", // Field in Order collection
+          foreignField: "_id", // Field in User collection
+          as: "userDetails", // Alias for the joined data
+        },
+      },
+      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "orderItems.productId",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: { path: "$productDetails", preserveNullAndEmptyArrays: true },
+      }, // Unwind productDetails
+      {
+        $project: {
+          _id: 0, // Exclude _id from the result
+          status: 1,
+          totalAmount: 1,
+          orderItems: 1,
+          createdAt: 1,
+          "userDetails.firstName": 1,
+          "userDetails.lastName": 1,
+          "productDetails.name": 1,
+          "productDetails.price": 1,
+          "productDetails.imageUrls": 1,
+        },
+      },
+    ]);
+
+    if (order && order.length > 0) {
+      res.status(200).json({ order: order[0] }); // Return first (and only) order
     } else {
       res.status(404).json({ message: "Order not found" });
     }
   } catch (error: any) {
-    console.error("Error fetching orders:", error);
+    console.error("Error fetching order:", error);
     res.status(500).json({
-      message: "Failed to retrieve orders",
+      message: "Failed to retrieve order",
       error: error.message,
     });
   }
 };
+
+// export const getOrder = async (req: Request, res: Response) => {
+//   try {
+//     const { id } = req.params;
+
+//     console.log(id);
+//     const order = await Order.findById(id);
+
+//     if (order) {
+//       res.status(200).json({
+//         order: order,
+//       });
+//     } else {
+//       res.status(404).json({ message: "Order not found" });
+//     }
+//   } catch (error: any) {
+//     console.error("Error fetching orders:", error);
+//     res.status(500).json({
+//       message: "Failed to retrieve orders",
+//       error: error.message,
+//     });
+//   }
+// };
 
 // PUT
 // DELETE

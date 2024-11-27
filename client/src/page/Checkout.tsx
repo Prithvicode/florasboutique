@@ -188,7 +188,7 @@ const CheckoutPage: React.FC = () => {
             ))
           )}
           <div className="mt-4">
-            <p className="font-semibold text-lg">Subtotal: ${subtotal}</p>
+            <p className="font-semibold text-lg">Subtotal: Rs. {subtotal}</p>
             <p className="text-sm text-gray-600">Shipping: Free</p>
           </div>
         </div>

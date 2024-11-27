@@ -15,19 +15,15 @@ const ProductCard: React.FunctionComponent<IProductCardProps> = (props) => {
             {products?.slice(0, 4).map((product: any) => {
               return (
                 <Link to={`/product/${product._id}`} key={product._id}>
-                  <a href="#" className="group" key={product._id}>
-                    <img
-                      src={`http://localhost:5001${product.imageUrls[0]}`}
-                      alt={product.name}
-                      className=" w-full  bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-[4/5]"
-                    />
-                    <h3 className="mt-4 text-sm text-gray-700">
-                      {product.name}
-                    </h3>
-                    <p className="mt-1 text-lg font-medium text-gray-900">
-                      Rs.{product.price}
-                    </p>
-                  </a>
+                  <img
+                    src={`http://localhost:5001${product.imageUrls[0]}`}
+                    alt={product.name}
+                    className=" w-full  bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-[4/5]"
+                  />
+                  <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3>
+                  <p className="mt-1 text-lg font-medium text-gray-900">
+                    Rs.{product.price}
+                  </p>
                 </Link>
               );
             })}

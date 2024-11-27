@@ -150,8 +150,11 @@ const ProductDetail: React.FC = () => {
           <div className="mt-7">
             <h2 className="text-xl">Sizes: </h2>
             <div className="flex space-x-2">
-              {product.size[0].split(",").map((s: any) => (
-                <div className="border-2 p-6 border-black text-center h-14 w-11 flex items-center justify-center">
+              {product.size[0].split(",").map((s: any, index: any) => (
+                <div
+                  className="border-2 p-6 border-black text-center h-14 w-11 flex items-center justify-center"
+                  key={index}
+                >
                   {s}
                 </div>
               ))}

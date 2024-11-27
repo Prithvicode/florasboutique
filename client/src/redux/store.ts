@@ -5,6 +5,7 @@ import { combineReducers } from "redux";
 import userReducer from "./slices/userSlice";
 import productApi from "./slices/productSlice";
 import cartReducer from "./slices/cartSlice";
+import orderReducer from "./slices/orderSlice";
 
 const persistConfig = {
   key: "root",
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   cart: cartReducer,
   [productApi.reducerPath]: productApi.reducer,
+  orders: orderReducer,
 });
 
 // Persisted reducer
@@ -31,5 +33,6 @@ const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 export const persistor = persistStore(store);
 export default store;
