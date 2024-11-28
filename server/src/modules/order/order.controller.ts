@@ -77,14 +77,52 @@ export const listOrders = async (req: Request, res: Response) => {
     // const userId = (req as Request & { user: { _id: string } }).user._id;
     // console.log(userId);
 
-    const orders = await Order.find();
-    console.log(orders);
+    // const orders = await Order.find();
+    const orders = await Order.aggregate([
+      {
+        $lookup: {
+          from: "users", // Join with the users collection
+          localField: "userId", // Field in Order collection
+          foreignField: "_id", // Field in User collection
+          as: "userDetails", // Alias for the joined data
+        },
+      },
+      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "orderItems.productId",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: { path: "$productDetails", preserveNullAndEmptyArrays: true },
+      }, // Unwind productDetails
+      {
+        $project: {
+          _id: 1,
+          status: 1,
+          totalAmount: 1,
+          orderItems: 1,
+          createdAt: 1,
+          "userDetails.firstName": 1,
+          "userDetails.lastName": 1,
+          "userDetails._id": 1,
+          "productDetails.name": 1,
+          "productDetails.price": 1,
+          "productDetails.imageUrls": 1,
+          deliveryDetail: 1,
+        },
+      },
+    ]);
 
-    if (orders.length > 0) {
-      res.status(200).json(orders);
+    if (orders && orders.length > 0) {
+      res.status(200).json(orders); // Return first (and only) order
     } else {
-      res.status(200).json([]);
+      res.status(404).json({ message: "Order not found" });
     }
+    console.log(orders);
   } catch (error: any) {
     console.error("Error fetching orders:", error);
     res.status(500).json({

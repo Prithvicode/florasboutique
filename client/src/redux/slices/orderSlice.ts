@@ -1,12 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Initial Order state
+interface UserDetails {
+  _id: string;
+  firstName: string;
+  lastName: string;
+}
+
 interface Order {
   _id: string;
-  customerName: string;
-  orderDate: string;
-  totalAmount: number;
+  userDetails: UserDetails;
+  orderItems: any[];
+  deliveryDetail: any;
+  productDetails: any;
   status: string;
   createdAt: string;
 }

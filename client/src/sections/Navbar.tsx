@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Cart from "../components/Cart";
 import {
@@ -10,6 +10,14 @@ import { UserIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { logout } from "../redux/slices/userSlice";
+import { jwtDecode } from "jwt-decode";
+
+interface DecodedToken {
+  id: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
 
 const Navbar = () => {
   const [openCart, setOpenCart] = useState(false);
@@ -22,6 +30,27 @@ const Navbar = () => {
   const dispatch = useDispatch();
 
   const isAdmin = user?.role === "admin";
+
+  const token = localStorage.getItem("jwt");
+
+  let decoded: DecodedToken | null = null;
+
+  if (token) {
+    try {
+      decoded = jwtDecode<DecodedToken>(token);
+    } catch (e) {
+      console.error("Invalid token", e);
+    }
+  }
+
+  // Filter orders based on user ID
+  const filteredOrders = useMemo(() => {
+    if (!decoded || !orders) return [];
+    if (decoded.role === "user") {
+      return orders.filter((order) => order.userDetails._id === decoded.id);
+    }
+    return orders;
+  }, [decoded, orders]);
 
   const handleOnClose = () => {
     setOpenCart(!openCart);
@@ -71,16 +100,20 @@ const Navbar = () => {
                     <ArchiveBoxIcon className="size-6 cursor-pointer" />
                   </li>
                 </Link>
-                <Link to={"/orders"}>
-                  <li className="relative">
-                    <DocumentTextIcon className="size-6 cursor-pointer" />
-                    <div className="absolute top-3 -right-2 bg-p1 text-white rounded-full px-2 flex items-center size-5 text-[11px]">
-                      {orders.length}
-                    </div>
-                  </li>
-                </Link>
               </>
             )}
+
+            {user?.role && (
+              <Link to={"/orders"}>
+                <li className="relative">
+                  <DocumentTextIcon className="size-6 cursor-pointer" />
+                  <div className="absolute top-3 -right-2 bg-p1 text-white rounded-full px-2 flex items-center size-5 text-[11px]">
+                    {filteredOrders.length}
+                  </div>
+                </li>
+              </Link>
+            )}
+
             <li onClick={handleOnClose} className="relative hover:scale-110">
               <ShoppingBagIcon className="size-6 cursor-pointer" />
               <div className="absolute top-3 -right-2 bg-p1 text-white rounded-full px-2 flex items-center size-5 text-[11px]">
