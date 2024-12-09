@@ -21,7 +21,6 @@ const CheckoutPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isOrderPlaced, setIsOrderPlaced] = useState(false); // Track order placement status
 
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -51,13 +50,10 @@ const CheckoutPage: React.FC = () => {
   };
 
   useEffect(() => {
-    // Prevent multiple order creation
-    if (isOrderPlaced) return;
-
     const params = new URLSearchParams(window.location.search);
     const status = params.get("status");
 
-    if (status === "success" && !isOrderPlaced) {
+    if (status === "success") {
       const orderData = buildOrderData();
 
       if (orderData) {
@@ -67,7 +63,6 @@ const CheckoutPage: React.FC = () => {
           .then(() => {
             toast.success("Thank you for your order!");
             dispatch(clearCart());
-            setIsOrderPlaced(true); // Mark order as placed to prevent further execution
           })
           .catch(() => {
             toast.error("There was an error with your order.");
@@ -76,7 +71,7 @@ const CheckoutPage: React.FC = () => {
     } else if (status === "failed") {
       toast.error("Payment failed. Please try again.");
     }
-  }, [isOrderPlaced, cartItems, deliveryDetails, user, dispatch]);
+  }, [dispatch]);
 
   const createOrder = async (orderData: any, token: string | null) => {
     const response = await fetch("http://localhost:5001/api/orders", {

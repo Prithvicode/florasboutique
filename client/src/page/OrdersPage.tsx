@@ -86,7 +86,13 @@ const OrdersPage = () => {
                         : order.status === "Cancelled"
                         ? "border-red-500"
                         : "border-gray-500"
-                    } hover:bg-gray-100`}
+                    } hover:bg-gray-100
+                    ${
+                      decoded?.role === "user"
+                        ? "cursor-not-allowed"
+                        : "cursor-pointer"
+                    }
+                    `}
                     disabled={decoded?.role === "user"} // Disable if user role is "user"
                   >
                     <option value="Pending">Pending</option>
